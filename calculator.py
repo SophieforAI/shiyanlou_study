@@ -23,25 +23,35 @@ class Config(object):
             for line in file:
                 l = line.strip().split('=')
                 config[l[0].strip()]=l[1].strip()
-        print(config)
+       
         return config
-        
-        
-        
-
 
 class UserData(object):
-    def __init__(self):
-        self.userdata = self._read_users_data()
-    def _read_users_data(self):
-        userdata =[]
+    def __init__(self,userfile):
+        self.userdata = self._read_users_data(userfile)
+    def _read_users_data(self,userfile):
+        userdata ={}
+        with open(userfile,'r') as file:
+            for line in file:
+                l = line.strip().split(',')
+                userdata[l[0]]=l[1]
+        
+        return userdata
 
-class IncomeTaxCalculator(object):
+class IncomeTaxCalculator(UserData):
     def calc_for_all_userdata(self):
-        pass
-    def export(self,default = 'csv'):
+        userdata = self.userdata
+        for key,value in userdata.items():
+            key = int(key)
+            value = int(value)
+        
+        
+        print(userdata)
+        
+    def export(self,export_file,default = 'csv'):
         result = self.calc_for_all_userdata()
-        with open() as f :
+        print(result)
+        with open(export_file,'w') as f :
            
             write = csv.write(f)
             write.writerows(result)
@@ -52,7 +62,10 @@ if __name__ =='__main__':
     Arg = Args()
     file_road = Arg.read_fileroad()
     cfg_file = file_road[0]
-    print(cfg_file)
-    Config = Config(cfg_file)
+    user_file = file_road[1]
+    UserData = UserData(user_file)
+    Income = IncomeTaxCalculator(user_file)
+    Income.calc_for_all_userdata()
+   # Config = Config(cfg_file)
    # print(Config._read_config(cfg_file))
     
