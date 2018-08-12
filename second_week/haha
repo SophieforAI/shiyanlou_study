@@ -1,0 +1,59 @@
+from sqlalchemy import create_engine, Column, String, Integer, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import backref, relationship, sessionmaker
+engine = create_engine('mysql://root@localhost/haha')
+Base = declarative_base(engine)
+session = sessionmaker(engine)()
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64), unique=True)
+    def __repr__(self):
+        return '<User: {}>'.format(self.name)
+    
+class Course(Base):
+    __tablename__ = 'course'
+    id = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    name = Column(String(55), unique=True)
+    user = relationship('User', backref=backref('course', uselist=False))
+    def __repr__(self):
+        return '<Course: {}>'.format(self.name)
+    
+from sqlalchemy import Table
+Real = Table('real', Base.metadata,
+    Column('tag_id', Integer, ForeignKey('tag.id'), primary_key=True),
+    Column('course_id', Integer, ForeignKey('course.id'),primary_key=True)
+)
+class Tag(Base):
+    __tablename__ = 'tag'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64), unique=True)
+    course = relationship('Course', secondary=Real, backref='tag')
+    def __repr__(self):
+        return '<Tag: {}>'.format(self.name)
+    
+Base.metadata.create_all()
+u = User(name='sophie')
+c = Course(name='Python Basic', user=u)
+t1 = Tag(name='Python')
+t1.course.append(c)
+for i in [u, c, t1]:
+    session.add(i)
+    
+session.commit()
+u.course
+c.user
+t1.course
+c.tag
+t1 = Tag(name='Flask')
+c.tag.append(t1)
+session.add(c)
+t2 = Tag(name='Mysql')
+c.tag.append(t2)
+session.add(t1)
+session.add(t2)
+session.add(c)
+session.commit()
+c.tag
+get_ipython().run_line_magic('logstart', 'haha')
+get_ipython().run_line_magic('logstop', '')
