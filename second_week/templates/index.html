@@ -1,5 +1,7 @@
 <ul>
-    {% for i in title_list %}
-        <li>{{ i }}</li>
+    {% for f in files %}
+      <li><a href="{{ url_for('file', file_id=f.id) }}">{{ f.title }}</a></li>
     {% endfor %}
 </ul>
+
+
