@@ -1,0 +1,11 @@
+<ul>
+    {% for f in files %}
+      <li><a href="{{ url_for('file', file_id=f.id) }}">{{ f.title }}</a></li>
+   
+        {% for tag in f.tags %}
+            <span class="label label-success">{{tag}}</span>
+        {% endfor %}
+    {% endfor %}
+</ul>
+
+
